@@ -45,6 +45,7 @@ namespace UKControllerPlugin {
             virtual void Clipped(Gdiplus::Region& clipRegion, std::function<void()> drawFunction) = 0;
             virtual void Translated(Gdiplus::REAL x, Gdiplus::REAL y, std::function<void()> drawFunction) = 0;
             virtual std::shared_ptr<Gdiplus::Matrix> GetTransform() = 0;
+            virtual std::shared_ptr<Gdiplus::Matrix> GetTotalTransform() = 0;
             virtual Gdiplus::RectF GetClipBounds() = 0;
             virtual void Scaled(Gdiplus::REAL x, Gdiplus::REAL y, std::function<void()> drawFunction) = 0;
             virtual void Rotated(Gdiplus::REAL angle, std::function<void()> drawFunction) = 0;

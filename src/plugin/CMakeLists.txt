@@ -94,7 +94,7 @@ set(src__components
     "components/StandardButtons.h"
     "components/TitleBar.cpp"
     "components/TitleBar.h"
-        components/CollapsibleWindowTitleBar.cpp components/CollapsibleWindowTitleBar.h)
+        components/CollapsibleWindowTitleBar.cpp components/CollapsibleWindowTitleBar.h components/Title.cpp components/Title.h components/Checkbox.cpp components/Checkbox.h components/Scrollbar.cpp components/Scrollbar.h components/ScrollbarFactory.cpp components/ScrollbarFactory.h components/ScrollbarClickspot.cpp components/ScrollbarClickspot.h components/ScrollbarOptions.cpp components/ScrollbarOptions.h components/ScrollableCheckboxes.cpp components/ScrollableCheckboxes.h components/CheckboxProviderInterface.cpp components/CheckboxProviderInterface.h)
 source_group("src\\components" FILES ${src__components})
 
 set(src__controller
@@ -256,7 +256,7 @@ set(src__flightrule
 source_group("src\\flightrule" FILES ${src__flightrule})
 
 set(src__geometry
-        geometry/Line.cpp geometry/Line.h geometry/DistanceRadiusToScreenRadius.cpp geometry/DistanceRadiusToScreenRadius.h)
+        geometry/Line.cpp geometry/Line.h geometry/DistanceRadiusToScreenRadius.cpp geometry/DistanceRadiusToScreenRadius.h geometry/RectangleFunctions.cpp geometry/RectangleFunctions.h)
 source_group("src\\geometry" FILES ${src__geometry})
 
 set(src__graphics
@@ -264,7 +264,7 @@ set(src__graphics
     "graphics/GdiGraphicsWrapper.cpp"
     "graphics/GdiGraphicsWrapper.h"
     "graphics/GdiplusBrushes.h"
-        graphics/FontManager.cpp graphics/FontManager.h graphics/StringFormatManager.cpp graphics/StringFormatManager.h)
+        graphics/FontManager.cpp graphics/FontManager.h graphics/StringFormatManager.cpp graphics/StringFormatManager.h graphics/DrawTriangle.cpp graphics/DrawTriangle.h)
 source_group("src\\graphics" FILES ${src__graphics})
 
 set(src__handoff
@@ -486,6 +486,42 @@ set(src__login
     "login/LoginModule.h"
 )
 source_group("src\\login" FILES ${src__login})
+
+set(src__mapping
+        mapping/MappingElement.cpp mapping/MappingElement.h
+        mapping/MappingElementInterface.h
+        mapping/MappingElementDrawer.h
+        mapping/DisplayRule.h
+        mapping/VisualReferencePoint.cpp mapping/VisualReferencePoint.h
+        mapping/MappingElementManager.cpp mapping/MappingElementManager.h
+        mapping/MappingElementManagerFactory.cpp mapping/MappingElementManagerFactory.h
+        mapping/MappingModuleFactory.cpp mapping/MappingModuleFactory.h
+        mapping/MappingBootstrapProvider.cpp mapping/MappingBootstrapProvider.h
+        mapping/MappingRenderer.cpp mapping/MappingRenderer.h
+        mapping/MappingOptionsRenderer.cpp mapping/MappingOptionsRenderer.h
+        mapping/MappingRenderOptions.cpp mapping/MappingRenderOptions.h
+        mapping/ToggleMappingOptionsRender.cpp mapping/ToggleMappingOptionsRender.h
+        mapping/VisualReferencePointShouldRender.cpp mapping/VisualReferencePointShouldRender.h
+        mapping/RelatedAirfieldProvider.h
+        mapping/RelatedAirfield.cpp mapping/RelatedAirfield.h
+        mapping/VisualReferencePointRelatedAirfieldProvider.cpp mapping/VisualReferencePointRelatedAirfieldProvider.h
+        mapping/MappingElementDrawerFactoryDelegator.cpp mapping/MappingElementDrawerFactoryDelegator.h
+        mapping/MappingElementFactory.h
+        mapping/MappingElementDrawerFactory.h
+        mapping/VisualReferencePointDrawerFactory.cpp mapping/VisualReferencePointDrawerFactory.h
+        mapping/ShowsVisualReferencePoints.cpp mapping/ShowsVisualReferencePoints.h
+        mapping/RelatedAirfieldProviderFactory.cpp mapping/RelatedAirfieldProviderFactory.h
+        mapping/MappingElementFactory.cpp
+        mapping/DisplayRuleFactoryInterface.h
+        mapping/DisplayRuleTypeDelegatorFactory.cpp mapping/DisplayRuleTypeDelegatorFactory.h
+        mapping/DisplayRuleElementTypeDelegatorFactory.cpp mapping/DisplayRuleElementTypeDelegatorFactory.h
+        mapping/DisplayRuleFactoryFactory.cpp mapping/DisplayRuleFactoryFactory.h
+        mapping/VisualReferencePointRelatedAirfieldFactory.cpp mapping/VisualReferencePointRelatedAirfieldFactory.h
+        mapping/DisplayRulesetFactory.cpp mapping/DisplayRulesetFactory.h
+        mapping/DisplayRulesetFactoryInterface.h
+        mapping/DisplayRulesetAggregatorFactory.cpp mapping/DisplayRulesetAggregatorFactory.h
+        mapping/VisualReferencePointDefaultDisplayRulesetFactory.cpp mapping/VisualReferencePointDefaultDisplayRulesetFactory.h mapping/DefaultDisplayRulesetDelegatorFactory.cpp mapping/DefaultDisplayRulesetDelegatorFactory.h mapping/DisplayRulesetFactoryFactory.cpp mapping/DisplayRulesetFactoryFactory.h mapping/MappingElementDrawerFactoryFactory.cpp mapping/MappingElementDrawerFactoryFactory.h mapping/MappingElementTypes.cpp mapping/MappingElementTypes.h mapping/MappingRenderOptionsAsrLoader.cpp mapping/MappingRenderOptionsAsrLoader.h mapping/VisualReferencePointCheckboxProvider.cpp mapping/VisualReferencePointCheckboxProvider.h)
+source_group("src\\mapping" FILES ${src__mapping})
 
 set(src__message
     "message/MessageSerializableInterface.h"
@@ -740,7 +776,7 @@ set(src__radarscreen
     "radarscreen/ScreenControlsBootstrap.h"
     "radarscreen/UKRadarScreen.cpp"
     "radarscreen/UKRadarScreen.h"
-        radarscreen/RadarRenderableInterface.cpp radarscreen/ConfigurableDisplayInterface.cpp radarscreen/MenuToggleableDisplayInterface.h radarscreen/ToggleDisplayFromMenu.cpp radarscreen/ToggleDisplayFromMenu.h radarscreen/MenuToggleableDisplayFactory.cpp radarscreen/MenuToggleableDisplayFactory.h)
+        radarscreen/RadarRenderableInterface.cpp radarscreen/ConfigurableDisplayInterface.cpp radarscreen/MenuToggleableDisplayInterface.h radarscreen/ToggleDisplayFromMenu.cpp radarscreen/ToggleDisplayFromMenu.h radarscreen/MenuToggleableDisplayFactory.cpp radarscreen/MenuToggleableDisplayFactory.h radarscreen/ScreenObjectInterface.cpp radarscreen/ScreenObjectInterface.h)
 source_group("src\\radarscreen" FILES ${src__radarscreen})
 
 set(src__regional
@@ -965,6 +1001,7 @@ set(ALL_FILES
     ${src__intention}
     ${src__list}
     ${src__login}
+    ${src__mapping}
     ${src__message}
     ${src__metar}
     ${src__minstack}
@@ -993,6 +1030,11 @@ set(ALL_FILES
     ${src__timedevent}
     ${src__timer}
     ${src__wake})
+
+################################################################################
+# Source Files
+################################################################################
+set_source_files_properties(ALL_FILES PROPERTIES COMPILE_FLAGS "-include pch/pch.h")
 
 ################################################################################
 # Target

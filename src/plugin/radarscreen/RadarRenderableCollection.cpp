@@ -1,10 +1,11 @@
 #include "pch/pch.h"
 #include "radarscreen/RadarRenderableCollection.h"
 #include "radarscreen/RadarRenderableInterface.h"
+#include "radarscreen/ScreenObjectInterface.h"
 #include "euroscope/EuroscopeRadarLoopbackInterface.h"
 
-using UKControllerPlugin::RadarScreen::RadarRenderableInterface;
 using UKControllerPlugin::Euroscope::EuroscopeRadarLoopbackInterface;
+using UKControllerPlugin::RadarScreen::RadarRenderableInterface;
 namespace UKControllerPlugin {
     namespace RadarScreen {
 
@@ -48,7 +49,7 @@ namespace UKControllerPlugin {
         */
         size_t RadarRenderableCollection::CountScreenObjects(void) const
         {
-            return this->screenObjectMap.size();
+            return this->screenObjectMap.size() + this->screenObjects.size();
         }
 
         /*
@@ -63,7 +64,6 @@ namespace UKControllerPlugin {
             return this->screenObjectMap.at(objectId);
         }
 
-
         /*
             Tell the renderer that a screen object has been left clicked.
         */
@@ -72,10 +72,14 @@ namespace UKControllerPlugin {
             int objectId,
             std::string objectDescription,
             POINT mousePos,
-            RECT itemArea
-        ) const {
-            this->allRenderers.at(this->screenObjectMap.at(objectId))
-                ->LeftClick(radarScreen, objectId, objectDescription, mousePos, itemArea);
+            RECT itemArea) const
+        {
+            if (this->screenObjectMap.contains(objectId)) {
+                this->allRenderers.at(this->screenObjectMap.at(objectId))
+                    ->LeftClick(radarScreen, objectId, objectDescription, mousePos, itemArea);
+            } else if (this->screenObjects.contains(objectId)) {
+                this->screenObjects.at(objectId)->LeftClick(radarScreen, objectDescription, mousePos);
+            }
         }
 
         /*
@@ -83,17 +87,19 @@ namespace UKControllerPlugin {
         */
         void RadarRenderableCollection::MoveScreenObject(int objectId, std::string objectDes, RECT position) const
         {
-            this->allRenderers.at(this->screenObjectMap.at(objectId))->Move(position, objectDes);
+            if (this->screenObjectMap.contains(objectId)) {
+                this->allRenderers.at(this->screenObjectMap.at(objectId))->Move(position, objectDes);
+            } else if (this->screenObjects.contains(objectId)) {
+                this->screenObjects.at(objectId)->Drag(objectDes, position);
+            }
         }
 
         /*
             Registers a renderer for a specific phase. Returns the renderer ID.
         */
         void RadarRenderableCollection::RegisterRenderer(
-            int rendererId,
-            std::shared_ptr<RadarRenderableInterface> renderer,
-            int renderPhase
-        ) {
+            int rendererId, std::shared_ptr<RadarRenderableInterface> renderer, int renderPhase)
+        {
             // Don't allow duplicate renderers
             if (this->allRenderers.count(rendererId) != 0) {
                 throw std::invalid_argument("Renderer already exists!");
@@ -102,7 +108,7 @@ namespace UKControllerPlugin {
             // Only accept renderers in a given phase.
             if (renderPhase == this->initialPhase) {
                 this->initialPhaseRenders.push_back(rendererId);
-            } else if(renderPhase == this->beforeTags) {
+            } else if (renderPhase == this->beforeTags) {
                 this->beforeTagRenders.push_back(rendererId);
             } else if (renderPhase == this->afterTags) {
                 this->afterTagRenders.push_back(rendererId);
@@ -148,9 +154,8 @@ namespace UKControllerPlugin {
         */
         void RadarRenderableCollection::Render(
             int phase,
-            UKControllerPlugin::Windows::GdiGraphicsInterface & graphics,
-            UKControllerPlugin::Euroscope::EuroscopeRadarLoopbackInterface & radarScreen
-        ) const
+            UKControllerPlugin::Windows::GdiGraphicsInterface& graphics,
+            UKControllerPlugin::Euroscope::EuroscopeRadarLoopbackInterface& radarScreen) const
         {
             if (phase == this->initialPhase) {
                 this->RenderGroup(this->initialPhaseRenders, graphics, radarScreen);
@@ -171,20 +176,23 @@ namespace UKControllerPlugin {
         void RadarRenderableCollection::RightClickScreenObject(
             int objectId,
             std::string objectDescription,
-            UKControllerPlugin::Euroscope::EuroscopeRadarLoopbackInterface & radarScreen
-        ) const {
-            this->allRenderers.at(this->screenObjectMap.at(objectId))
-                ->RightClick(objectId, objectDescription, radarScreen);
+            UKControllerPlugin::Euroscope::EuroscopeRadarLoopbackInterface& radarScreen) const
+        {
+            if (this->screenObjectMap.contains(objectId)) {
+                this->allRenderers.at(this->screenObjectMap.at(objectId))
+                    ->RightClick(objectId, objectDescription, radarScreen);
+            } else if (this->screenObjects.contains(objectId)) {
+                this->screenObjects.at(objectId)->RightClick(radarScreen, objectDescription);
+            }
         }
 
         /*
             Renders a given group of renderers.
         */
         void RadarRenderableCollection::RenderGroup(
-            const std::vector<int> & group,
-            UKControllerPlugin::Windows::GdiGraphicsInterface & graphics,
-            UKControllerPlugin::Euroscope::EuroscopeRadarLoopbackInterface & radarScreen
-        ) const
+            const std::vector<int>& group,
+            UKControllerPlugin::Windows::GdiGraphicsInterface& graphics,
+            UKControllerPlugin::Euroscope::EuroscopeRadarLoopbackInterface& radarScreen) const
         {
             for (std::vector<int>::const_iterator it = group.cbegin(); it != group.cend(); ++it) {
                 if (this->allRenderers.at(*it)->IsVisible()) {
@@ -198,14 +206,21 @@ namespace UKControllerPlugin {
         */
         void RadarRenderableCollection::ResetPosition(void) const
         {
-            for (
-                std::map<int, std::shared_ptr<RadarRenderableInterface>>::const_iterator it
-                    = this->allRenderers.cbegin();
-                it != this->allRenderers.cend();
-                ++it
-            ) {
+            for (std::map<int, std::shared_ptr<RadarRenderableInterface>>::const_iterator it =
+                     this->allRenderers.cbegin();
+                 it != this->allRenderers.cend();
+                 ++it) {
                 it->second->ResetPosition();
             }
         }
-    }  // namespace RadarScreen
-}  // namespace UKControllerPlugin
+        void RadarRenderableCollection::RegisterScreenObject(std::shared_ptr<ScreenObjectInterface> screenObject)
+        {
+            screenObjects[screenObject->ScreenObjectId()] = screenObject;
+        }
+
+        auto RadarRenderableCollection::ReserveScreenObjectIdentifier() -> int
+        {
+            return nextScreenObjectId++;
+        }
+    } // namespace RadarScreen
+} // namespace UKControllerPlugin

@@ -44,6 +44,7 @@ namespace UKControllerPlugin {
             void Translated(Gdiplus::REAL x, Gdiplus::REAL y, std::function<void()> drawFunction) override;
             void Scaled(Gdiplus::REAL x, Gdiplus::REAL y, std::function<void()> drawFunction) override;
             std::shared_ptr<Gdiplus::Matrix> GetTransform() override;
+            std::shared_ptr<Gdiplus::Matrix> GetTotalTransform() override;
             Gdiplus::RectF GetClipBounds() override;
             void Rotated(Gdiplus::REAL angle, std::function<void()> drawFunction) override;
             void FillPolygon(Gdiplus::Point* points, const Gdiplus::Brush& brush, int numPoints) override;
@@ -53,6 +54,9 @@ namespace UKControllerPlugin {
 
             private:
             std::unique_ptr<Gdiplus::Graphics> api;
+
+            // The full transform as it currently is
+            Gdiplus::Matrix fullTransform;
         };
     } // namespace Windows
 } // namespace UKControllerPlugin

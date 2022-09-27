@@ -4,6 +4,9 @@ namespace UKControllerPlugin {
     namespace Approach {
         class ApproachModuleFactory;
     } // namespace Approach
+    namespace Mapping {
+        class MappingModuleFactory;
+    } // namespace Mapping
 } // namespace UKControllerPlugin
 
 namespace UKControllerPlugin::Bootstrap {
@@ -17,11 +20,16 @@ namespace UKControllerPlugin::Bootstrap {
     class ModuleFactories
     {
         public:
+        ModuleFactories();
         ~ModuleFactories();
         [[nodiscard]] auto Approach() -> Approach::ApproachModuleFactory&;
+        [[nodiscard]] auto Mapping() -> Mapping::MappingModuleFactory&;
 
         private:
         // The approach module
         std::unique_ptr<Approach::ApproachModuleFactory> approach;
+
+        // The mapping module
+        std::unique_ptr<Mapping::MappingModuleFactory> mapping;
     };
 } // namespace UKControllerPlugin::Bootstrap

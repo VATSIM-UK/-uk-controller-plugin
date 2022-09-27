@@ -186,7 +186,9 @@ namespace UKControllerPlugin {
         {
             const auto container = this->api->BeginContainer();
             this->api->TranslateTransform(x, y);
+            this->fullTransform.Translate(x, y);
             drawFunction();
+            this->fullTransform.Translate(-x, -y);
             this->api->EndContainer(container);
         }
 
@@ -194,7 +196,9 @@ namespace UKControllerPlugin {
         {
             const auto container = this->api->BeginContainer();
             this->api->ScaleTransform(x, y);
+            this->fullTransform.Scale(x, y);
             drawFunction();
+            this->fullTransform.Scale(1 / x, 1 / y);
             this->api->EndContainer(container);
         }
 
@@ -203,6 +207,11 @@ namespace UKControllerPlugin {
             Gdiplus::Matrix transform;
             this->api->GetTransform(&transform);
             return std::shared_ptr<Gdiplus::Matrix>(transform.Clone());
+        }
+
+        std::shared_ptr<Gdiplus::Matrix> GdiGraphicsWrapper::GetTotalTransform()
+        {
+            return std::shared_ptr<Gdiplus::Matrix>(fullTransform.Clone());
         }
 
         Gdiplus::RectF GdiGraphicsWrapper::GetClipBounds()
@@ -216,7 +225,9 @@ namespace UKControllerPlugin {
         {
             const auto container = this->api->BeginContainer();
             this->api->RotateTransform(angle);
+            this->fullTransform.Rotate(angle);
             drawFunction();
+            this->fullTransform.Rotate(-angle);
             this->api->EndContainer(container);
         }
 

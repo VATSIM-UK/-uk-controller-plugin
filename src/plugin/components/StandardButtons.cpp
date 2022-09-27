@@ -1,4 +1,5 @@
 #include "StandardButtons.h"
+#include "graphics/DrawTriangle.h"
 #include "graphics/GdiGraphicsInterface.h"
 
 namespace UKControllerPlugin::Components {
@@ -8,9 +9,6 @@ namespace UKControllerPlugin::Components {
     Gdiplus::Point closeBottomRight = {5, 5};
     Gdiplus::Point closeBottomLeft = {-5, 5};
     Gdiplus::Point closeTopRight = {5, -5};
-
-    // Coordinates of the collapse triangle
-    Gdiplus::Point collapsePoints[3] = {Gdiplus::Point(0, -5), Gdiplus::Point(5, 5), Gdiplus::Point(-5, 5)};
 
     // The standard button sizing
     Gdiplus::REAL buttonSize(10);
@@ -53,20 +51,15 @@ namespace UKControllerPlugin::Components {
     {
         auto brush = std::make_shared<Gdiplus::SolidBrush>(colour);
         return [brush, stateFunction](Windows::GdiGraphicsInterface& graphics, const Gdiplus::Rect& drawArea) {
-            Gdiplus::REAL scaleX = drawArea.Width / buttonSize;
-            Gdiplus::REAL scaleY = drawArea.Height / buttonSize;
-
             graphics.Translated(
-                static_cast<Gdiplus::REAL>(5) * scaleX,
-                static_cast<Gdiplus::REAL>(5) * scaleY,
-                [&graphics, &stateFunction, &brush, &scaleX, &scaleY] {
+                static_cast<Gdiplus::REAL>(Graphics::TriangleDrawDimensions() / 2) * drawArea.Width /
+                    Graphics::TriangleDrawDimensions(),
+                static_cast<Gdiplus::REAL>(Graphics::TriangleDrawDimensions() / 2) * drawArea.Height /
+                    Graphics::TriangleDrawDimensions(),
+                [&graphics, &stateFunction, &brush, drawArea] {
                     graphics.Rotated(
                         stateFunction() ? static_cast<Gdiplus::REAL>(180) : static_cast<Gdiplus::REAL>(0),
-                        [&graphics, &brush, &scaleX, &scaleY]() {
-                            graphics.Scaled(scaleX, scaleY, [&graphics, &brush]() {
-                                graphics.FillPolygon(collapsePoints, *brush, 3);
-                            });
-                        });
+                        [&graphics, &brush, drawArea]() { Graphics::FillTriangle(graphics, *brush, drawArea); });
                 });
         };
     }

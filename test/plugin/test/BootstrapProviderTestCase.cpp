@@ -33,6 +33,7 @@ namespace UKControllerPluginTest {
     {
         PersistenceContainer container;
         ModuleBootstrap(container);
+        container.dependencyLoader = std::make_shared<Dependency::MockDependencyLoader>();
         container.pluginFunctionHandlers = std::make_unique<FunctionCallEventHandler>();
         container.popupListFactory =
             std::make_unique<PopupListFactory>(*container.pluginFunctionHandlers, *container.plugin);

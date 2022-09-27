@@ -61,7 +61,7 @@ set(test__components
     "components/ButtonTest.cpp"
     "components/ClickableAreaTest.cpp"
     "components/TitleBarTest.cpp"
-)
+        ../../src/plugin/mapping/VisualReferencePointCheckboxProvider.cpp ../../src/plugin/mapping/VisualReferencePointCheckboxProvider.h)
 source_group("test\\components" FILES ${test__components})
 
 set(test__controller
@@ -143,7 +143,7 @@ set(test__flightrule
 source_group("test\\flightrule" FILES ${test__flightrule})
 
 set(test__geometry
-        geometry/LineTest.cpp geometry/DistanceRadiusToScreenRadiusTest.cpp)
+        geometry/LineTest.cpp geometry/DistanceRadiusToScreenRadiusTest.cpp geometry/RectangleFunctionsTest.cpp)
 source_group("test\\geometry" FILES ${test__geometry})
 
 set(test__handoff
@@ -262,6 +262,10 @@ set(test__login
 )
 source_group("test\\login" FILES ${test__login})
 
+set(test__mapping
+        mapping/MappingElementTest.cpp mapping/MappingModuleFactoryTest.cpp mapping/MappingElementManagerTest.cpp mapping/MappingElementManagerFactoryTest.cpp mapping/MappingBootstrapProviderTest.cpp mapping/MappingRenderOptionsTest.cpp mapping/ToggleMappingOptionsRenderTest.cpp)
+source_group("test\\mapping" FILES ${test__mapping})
+
 set(test__message
     "message/UserMessagerBootstrapTest.cpp"
     "message/UserMessagerTest.cpp"
@@ -358,7 +362,7 @@ set(test__mock
     mock/MockCallsignSelectionProvider.h
     mock/MockAircraftTypeMapper.h
     mock/MockWakeCategoryMapper.h
-    mock/MockListItemProvider.h mock/MockPopupList.h mock/MockBootstrapProvider.h mock/MockPluginSettingsProvider.h)
+    mock/MockListItemProvider.h mock/MockPopupList.h mock/MockBootstrapProvider.h mock/MockPluginSettingsProvider.h mock/MockDisplayRule.h mock/MockMappingElementDrawer.h)
 source_group("test\\mock" FILES ${test__mock})
 
 set(test__navaids
@@ -609,6 +613,7 @@ set(ALL_FILES
     ${test__intention}
     ${test__list}
     ${test__login}
+    ${test__mapping}
     ${test__message}
     ${test__metar}
     ${test__minstack}
