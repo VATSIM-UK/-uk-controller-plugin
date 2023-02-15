@@ -96,6 +96,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: .\\.github\\workflows\\plugin_version.ps1
+        
+      - name: Load CCache
+        uses: hendrikmuhs/ccache-action@v1.1
+        with:
+          key: ${{ matrix.os }}-${{ matrix.type }}
 
       - name: Run CMake
         env:
@@ -103,12 +108,12 @@ jobs:
           CFLAGS: -m32
           CXX: clang-cl
           CXXFLAGS: -m32
-        run: cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_DEPENDS_USE_COMPILER=FALSE -G Ninja -Bbuild
+        run: cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_DEPENDS_USE_COMPILER=FALSE -D CMAKE_C_COMPILER_LAUNCHER=ccache -D CMAKE_CXX_COMPILER_LAUNCHER=ccache -G Ninja -Bbuild
 
       # Run the build and tests
       - name: Run Ninja Build
         working-directory: build
-        run: ninja
+        run: ninja -j 2
 
       - name: Run Tests
         working-directory: build
