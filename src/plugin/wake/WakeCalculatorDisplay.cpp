@@ -91,6 +91,11 @@ namespace UKControllerPlugin::Wake {
             this->contentCollapsed = !this->contentCollapsed;
             return;
         }
+
+        if (objectDescription == "closeButton") {
+            this->visible = false;
+            return;
+        }
     }
 
     void WakeCalculatorDisplay::Move(RECT position, std::string objectDescription)

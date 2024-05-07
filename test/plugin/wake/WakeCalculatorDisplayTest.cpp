@@ -54,6 +54,16 @@ namespace UKControllerPluginTest::Wake {
         EXPECT_FALSE(display.IsCollapsed());
     }
 
+    TEST_F(WakeCalculatorDisplayTest, ItCanBeClosedByClickButton)
+    {
+        if (!display.IsVisible()) {
+            display.Toggle();
+        }
+        EXPECT_TRUE(display.IsVisible());
+        display.LeftClick(radarScreen, 1, "closeButton", {1, 2}, {});
+        EXPECT_FALSE(display.IsVisible());
+    }
+
     TEST_F(WakeCalculatorDisplayTest, ItHasADefaultPosition)
     {
         const auto position = display.Position();
